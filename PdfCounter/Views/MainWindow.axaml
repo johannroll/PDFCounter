@@ -1,0 +1,373 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:PdfCounter.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="using:PdfCounter.Views"
+        mc:Ignorable="d"
+        d:DesignWidth="500"
+        d:DesignHeight="800"
+        x:Class="PdfCounter.Views.MainWindow"
+        xmlns:m="using:PdfCounter.Models"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        x:CompileBindings="False"
+        xmlns:conv="using:PdfCounter.Helpers"
+        xmlns:converters="using:PdfCounter.Converters"
+        Title="PdfCounter">
+
+  <Design.DataContext>
+      <!-- This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+      <vm:MainWindowViewModel/>
+  </Design.DataContext>
+
+  <Window.Resources>
+    <converters:EmptyStringToBoolConverter x:Key="EmptyStringToBoolConverter"/>
+    <DataTemplate x:Key="PropertiesHeaderTemplate">
+      <TextBlock Text="Properties"/>
+    </DataTemplate>
+   
+  </Window.Resources>
+
+  <Window.DataTemplates>
+    <DataTemplate DataType="m:AddPropertyItem">
+      <TextBlock Text="➕ Add property…" FontStyle="Italic"/>
+    </DataTemplate>
+
+    <DataTemplate DataType="m:ExtractField">
+      <StackPanel Orientation="Horizontal" Spacing="6">
+        <TextBlock  Margin="0 6 0 0" Text="🏷"
+                    IsVisible="{Binding IsFirstPageIdentifier}" />
+        <TextBlock VerticalAlignment="Center" Text="{Binding Name}" />
+      </StackPanel>
+    </DataTemplate>
+  </Window.DataTemplates>
+  
+    <Grid Margin="0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="6"/>    
+        <RowDefinition Height="Auto"/> 
+        <RowDefinition Height="*"/>  
+      </Grid.RowDefinitions>
+      <ProgressBar Grid.Row="0" x:Name="LoaderBar"
+          IsIndeterminate="True"
+          Height="6"
+          Margin="0"   
+          IsVisible="{Binding IsBusy}"/>
+      <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+        <TextBlock Grid.Row="0" Margin="20" FontSize="24" FontWeight="800" 
+                HorizontalAlignment="Center" Text="PDF Counter"/>
+        <StackPanel Margin="32 20 10 20" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left">
+          <Button Grid.Row="0" Content="Load Job" Command="{Binding LoadJobCommand}" Margin="0,0,0,0"/>
+          <Button Grid.Row="0" Content="Save Job" Command="{Binding SaveJobCommand}" Margin="8,0,0,0"/>
+          <TextBlock Grid.Row="0" Margin="20,0,5,0" Text="Job:" VerticalAlignment="Center"/>
+          <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Hidden" Width="195">
+            <TextBlock Text="{Binding LoadedJobName}" VerticalAlignment="Center" TextWrapping="NoWrap" />
+          </ScrollViewer>
+        </StackPanel>
+
+        <!-- <Button Grid.Row="1" Margin="10,10" HorizontalAlignment="Center" 
+                Command="{Binding SelectFileCommand}">Select PDF file</Button>
+
+        <Grid HorizontalAlignment="Center" Grid.Row="2" ColumnDefinitions="160, 350, 120"
+            RowDefinitions="Auto,Auto,Auto,*" >
+            <Label Grid.Row="0" Grid.Column="0" Margin="10">Selected File</Label>
+            <TextBox Grid.Row="0" Grid.Column="1" Margin="0 5" Text="{Binding PdfFileName}" IsReadOnly="True"/>
+            <Button Grid.Row="0" Grid.Column="2" Margin="5 5 15 5" Command="{Binding ClearJobCommand}">Clear Job</Button>
+
+            <ComboBox HorizontalAlignment="Center" Margin="0 5 0 5" Grid.Row="1" Grid.Column="1"
+              x:Name="PropertyPicker"
+              ItemsSource="{Binding PropertyChoices}"
+              SelectionChanged="PropertyPicker_OnSelectionChanged"
+              SelectedIndex="-1"
+              SelectionBoxItemTemplate="{StaticResource PropertiesHeaderTemplate}"
+              MinWidth="350" />       
+        </Grid>
+
+        <StackPanel Grid.Row="4">
+            <Button HorizontalAlignment="Center" Margin="30 10" Command="{Binding ProcessPdfFilesCommand}">Run File</Button>
+        </StackPanel> -->
+        
+       
+      </Grid>
+
+      <!-- Views/MainWindow.axaml (only the inside of Window) -->
+      <Grid Grid.Row="2" RowDefinitions="Auto,*" Margin="12">
+        <!-- Controls row -->
+        <StackPanel Margin="20 0 0 15" Orientation="Horizontal" Spacing="12">
+          <TextBlock Text="PDF:" VerticalAlignment="Center"/>
+          <TextBox Focusable="False" IsReadOnly="True" Width="300" Text="{Binding PdfFileName, Mode=TwoWay}"/>
+          <TextBlock Text="Page:" VerticalAlignment="Center" Margin="8,0,0,0"/>
+          <NumericUpDown IsEnabled="{Binding ContentEnabled}"  HorizontalContentAlignment="Center" Width="103" Text="{Binding SamplePageIndex, Mode=TwoWay}" Minimum="0" Increment="1"/>
+          <Button Content="Load PDF" Command="{Binding SelectFileCommand}" Margin="8,0,0,0"/>
+          <Button IsVisible="False" Content="Refresh" Command="{Binding RefreshCommand}" Margin="8,0,0,0"/>
+          <Button Content="Clear Job" Command="{Binding ClearJobCommand}" Margin="8,0,0,0"/>
+          <Button 
+            Content="Export CSV" 
+            Margin="8,0,0,0"
+            Foreground="#FFFFFF"
+            Background="DodgerBlue"
+            IsVisible="{Binding RowsNotZero}"
+            Command="{Binding ExportResultsToCsvCommand}"
+            />
+        </StackPanel>
+        
+        <TextBlock Foreground="#e5e2e2ff" HorizontalAlignment="Center"  FontSize="26" Margin="20 60 0 10" Grid.Row="1" IsVisible="{Binding ContentDisabled}" Text="Load Job or PDF to start" />
+
+        <TabControl
+          Grid.Row="1" 
+          IsVisible="{Binding ContentEnabled}"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch"
+          SelectedIndex="{Binding CurrentTab}">
+          <TabItem 
+          Header="Chunks (points)"
+          Tapped="OnTabHeaderClicked"
+          Margin="10">
+            <Grid RowDefinitions="Auto,*" Margin="4 4 4 10">
+              <StackPanel Margin="12 10 0 10" Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="Filter:" VerticalAlignment="Center"/>
+                <TextBox Width="220" Text="{Binding ChunkFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBlock Text="(Shows Text)" VerticalAlignment="Center" Opacity="0.7" Margin="8,0,0,0"/>
+              </StackPanel>
+              <DataGrid Grid.Row="1"
+                        ItemsSource="{Binding ChunkRows}" 
+                        SelectedItem="{Binding SelectedChunk, Mode=TwoWay}"
+                        AutoGenerateColumns="False"
+                        HeadersVisibility="Column"                  
+                        GridLinesVisibility="Horizontal"
+                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        >
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="Text"  
+                      Binding="{Binding Text}" 
+                      Width="*"/>
+                  <DataGridTextColumn Header="X"     Binding="{Binding X, StringFormat=F2}" Width="120"/>
+                  <DataGridTextColumn Header="Y"     Binding="{Binding Y, StringFormat=F2}" Width="120"/>
+                  <DataGridTextColumn Header="Width" Binding="{Binding Width, StringFormat=F2}" Width="120"/>
+                  <DataGridTextColumn Header="Height" Binding="{Binding Height, StringFormat=F2}" Width="120"/>
+                </DataGrid.Columns>
+                <DataGrid.Styles>
+                  <Style Selector="DataGridRowHeader">
+                    <Setter Property="IsVisible" Value="False"/>
+                    <Setter Property="Width" Value="0"/>
+                    <Setter Property="MinWidth" Value="0"/>
+                    <Setter Property="MaxWidth" Value="0"/>
+                  </Style>
+                </DataGrid.Styles>
+              </DataGrid>
+            </Grid>
+          </TabItem>
+
+          <!-- Tab 2: -->
+          <TabItem Header="PDF + Overlays" Margin="10">
+            <Grid Margin="0 10 0 10" RowDefinitions="*" ColumnDefinitions="2*,*">
+              <Grid Grid.Column="0" x:Name="LeftCol">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                    HorizontalScrollBarVisibility="Disabled">
+                <Viewbox Stretch="Uniform"     
+                        HorizontalAlignment="Stretch"
+                        StretchDirection="Both"
+                        VerticalAlignment="Stretch">
+               
+                  <Grid Width="{Binding ImagePixelWidth}"
+                        Height="{Binding ImagePixelHeight}">
+                  
+                    <Image Source="{Binding PageBitmap}" Stretch="Fill"/>
+
+                    <ListBox x:Name="OverlayItems"
+                            ItemsSource="{Binding OverlayBoxes}"
+                            Width="{Binding ImagePixelWidth}"
+                            Height="{Binding ImagePixelHeight}"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            IsHitTestVisible="False">
+                      <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                          <Canvas/>
+                        </ItemsPanelTemplate>
+                      </ListBox.ItemsPanel>
+
+                      <ListBox.ItemTemplate>
+                        <DataTemplate>
+                          <Border BorderBrush="{Binding BorderBoxColor}"
+                                  BorderThickness="2"
+                                  Background="#40FF0000"
+                                  Width="{Binding WidthPx}"
+                                  Height="{Binding HeightPx}">
+                            <TextBlock Text="{Binding Label}"
+                                      Margin="2"
+                                      Background="#242424ff"
+                                      FontSize="12"/>
+                          </Border>
+                        </DataTemplate>
+                      </ListBox.ItemTemplate>
+
+                      <ListBox.Styles>
+                        <Style Selector="#OverlayItems ListBoxItem">
+                          <Setter Property="Canvas.Left" Value="{Binding LeftPx}"/>
+                          <Setter Property="Canvas.Top"  Value="{Binding TopPx}"/>
+                          <Setter Property="Padding" Value="0"/>
+                          <Setter Property="Margin" Value="0"/>
+                          <Setter Property="Background" Value="Transparent"/>
+                          <Setter Property="BorderThickness" Value="0"/>
+                        </Style>
+                      </ListBox.Styles>
+                    </ListBox>
+                  </Grid>
+                </Viewbox>
+                </ScrollViewer>
+              </Grid>
+               <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Hidden"
+                    HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Grid.Column="1" Margin="12" Spacing="8">
+                  <TextBlock Text="Add Box (points, bottom-left origin)" FontWeight="Bold"/>
+
+                  <TextBlock Text="Name"/>
+                  <TextBox Text="{Binding NewFieldName, Mode=TwoWay}"/>
+
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <CheckBox Content="Is First Page Identifier" IsChecked="{Binding NewFieldIsFirst, Mode=TwoWay}"/>
+                  </StackPanel>
+
+                   <StackPanel Orientation="Horizontal" Spacing="8">
+                    <CheckBox Content="Is Inline Value" IsChecked="{Binding NewFieldIsInline, Mode=TwoWay}"/>
+                  </StackPanel>
+
+                  <TextBlock IsVisible="False" Text="Group Number"/>
+                  <TextBox IsVisible="False" Text="{Binding NewFieldGroup, Mode=TwoWay}"/>
+
+                  <TextBlock Text="Match Values"/>
+                  <TextBox IsEnabled="{Binding NewFieldIsNotInline}" Text="{Binding NewMatchValues, Mode=TwoWay}"/>
+
+                  <Separator/>
+
+                  <StackPanel Orientation="Horizontal" Spacing="12">
+                    <StackPanel IsVisible="True">
+                      <TextBlock Text="X (pt)"/>
+                      <TextBox Width="120" Text="{Binding NewX, Mode=TwoWay}"/>
+                    </StackPanel>
+                    <StackPanel IsVisible="True">
+                      <TextBlock Text="Y (pt)"/>
+                      <TextBox Width="120" Text="{Binding NewY, Mode=TwoWay}"/>
+                    </StackPanel>
+                  </StackPanel>
+
+                  <StackPanel Orientation="Horizontal" Spacing="12">
+                    <StackPanel IsVisible="True">
+                      <TextBlock Text="Width (pt)"/>
+                      <TextBox Width="120" Text="{Binding NewW, Mode=TwoWay}"/>
+                    </StackPanel>
+                    <StackPanel IsVisible="True">
+                      <TextBlock Text="Height (pt)"/>
+                      <TextBox Width="120" Text="{Binding NewH, Mode=TwoWay}"/>
+                    </StackPanel>
+                  </StackPanel>
+
+                  <StackPanel Orientation="Horizontal">
+                    <Button Content="Add Box" Command="{Binding AddTestBoxCommand}" Margin="0,8,0,0"/>
+                    <Button Content="Clear Boxes" Command="{Binding ClearTestBoxesOverlaysCommand}" Margin="8,8,0,0"/>
+                  </StackPanel>
+                  <Button
+                    Height="40"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    HorizontalAlignment="Stretch" 
+                    Margin="0 10 0 0" 
+                    FontSize="16"
+                    Command="{Binding ProcessPdfFilesCommand}"
+                    Content="Run">
+                  </Button>
+                  <!-- <Button Content="Add property" Command="{Binding ClearTestBoxesOverlaysCommand}" Margin="0,8,0,0"/>
+                  <TextBlock Text="Tip: Y is from bottom; use chunk Y from Tab 2 as reference." Opacity="0.7" TextWrapping="Wrap"/> -->
+                  
+                  <Separator Margin="0,8,0,8"/>
+
+                  <TextBlock Text="Current Boxes:" FontWeight="SemiBold"/>
+                  <ItemsControl ItemsSource="{Binding UserFields}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                      <Grid ColumnDefinitions="*,Auto" Margin="0,4">
+                          <ScrollViewer VerticalScrollBarVisibility="Disabled"
+                            HorizontalScrollBarVisibility="Hidden">
+
+                            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                              <TextBlock
+                                        Text="{Binding Name}"
+                                        Margin="0 0 8 0"
+                                        VerticalAlignment="Center"/>
+                              <TextBlock 
+                                        Text="  🏷️"
+                                        FontSize="12"
+                                        Margin="3 0 0 0"
+                                        VerticalAlignment="Center"
+                                        IsVisible="{Binding IsFirstPageIdentifier}"/>
+                              <TextBlock 
+                                        Text=" (Inline)"
+                                        FontSize="12"
+                                        Margin="3 0 0 0"
+                                        VerticalAlignment="Center"
+                                        IsVisible="{Binding IsInlineValue}"/>
+                              <TextBlock 
+                                        Text=" (Match values)"
+                                        FontSize="12"
+                                        Margin="3 0 0 0"
+                                        VerticalAlignment="Center"
+                                        IsVisible="{Binding IsMatchValuesTag}"/>
+                            </StackPanel>
+                          </ScrollViewer>
+
+                          <Button Grid.Column="1"
+                                  Content="Remove"
+                                  Command="{Binding $parent[Window].DataContext.RemoveUserFieldCommand}"
+                                  CommandParameter="{Binding .}"/>
+                        </Grid>
+                      </DataTemplate> 
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </ScrollViewer>
+            </Grid>
+          </TabItem>
+
+          <TabItem Header="Results" Margin="10">
+            <DataGrid 
+                x:Name="Grid"
+                Margin="10 10"
+                ItemsSource="{Binding Rows}"
+                AutoGenerateColumns="False"
+                GridLinesVisibility="All"
+                HeadersVisibility="All"
+                SelectionMode="Extended"
+                VerticalAlignment="Top"       
+                >
+               <DataGrid.Styles>
+                <!-- Apply class 'cellEmpty' to any TextBlock inside cells when (rowIndex > 0 && Text is empty) -->
+                <Style Selector="DataGridCell TextBlock">
+                  <Setter Property="Classes.cellEmpty">
+                    <Setter.Value>
+                      <MultiBinding Converter="{StaticResource EmptyStringToBoolConverter}">
+                        <Binding RelativeSource="{RelativeSource Self}" Path="Text"/>
+                        <Binding RelativeSource="{RelativeSource AncestorType=DataGridRow}" Path="Index"/>
+                      </MultiBinding>
+                    </Setter.Value>
+                  </Setter>
+                </Style>
+
+                <!-- Paint those marked as empty -->
+                <Style Selector="DataGridCell TextBlock.cellEmpty">
+                  <Setter Property="Background" Value="#FFFFA500"/>
+                  <Setter Property="Margin" Value="0"/>
+                  <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                  <Setter Property="VerticalAlignment"   Value="Stretch"/>
+                </Style>
+              </DataGrid.Styles>
+            </DataGrid>
+          </TabItem>
+        </TabControl>
+      </Grid>
+    </Grid>
+</Window>

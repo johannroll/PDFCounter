@@ -1,0 +1,21 @@
+# Build output
+bin/
+obj/
+**/publish/
+*.r2r.dll
+*.r2rmap
+*.pdb
+*.dll
+*.dylib
+*.exe
+*.app/
+
+# IDEs
+.vs/
+.idea/
+*.user
+*.suo
+
+# OS
+.DS_Store
+Thumbs.db

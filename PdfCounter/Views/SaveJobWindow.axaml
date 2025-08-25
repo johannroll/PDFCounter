@@ -1,0 +1,18 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="using:PdfCounter.Views"
+        x:Class="PdfCounter.Views.SaveJobWindow"
+        Width="450" Height="122"
+        x:CompileBindings="False"
+        Title="Save Job">
+
+ <Grid RowDefinitions="Auto,Auto" Margin="8 12 12 12">
+    <views:SaveJobEditor x:Name="Editor"/>
+
+    <StackPanel Margin="8" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+      <Button Content="Save"   IsDefault="True" Click="OnSave"/>
+      <!-- <Button Content="Remove" Click="OnRemove"/> -->
+      <Button Content="Cancel" IsCancel="True" Click="OnCancel"/>
+    </StackPanel>
+  </Grid>
+</Window>
