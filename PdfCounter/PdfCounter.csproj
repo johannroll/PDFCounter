@@ -22,6 +22,12 @@
     <CreateMacOSApp>true</CreateMacOSApp>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(RuntimeIdentifier)'=='win-x64' or '$(RuntimeIdentifier)'=='win-arm64'">
+    <PublishSingleFile>false</PublishSingleFile>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+
   <ItemGroup>
       <Folder Include="Models\" />
       <AvaloniaResource Include="Assets\**" />
