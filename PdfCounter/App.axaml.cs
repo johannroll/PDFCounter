@@ -7,6 +7,7 @@ using Avalonia.Markup.Xaml;
 using PdfCounter.ViewModels;
 using PdfCounter.Views;
 using Microsoft.Extensions.DependencyInjection;
+using Avalonia.Styling;
 
 namespace PdfCounter;
 
@@ -33,6 +34,7 @@ public partial class App : Application
             DisableAvaloniaDataAnnotationValidation();
         }
 
+        RequestedThemeVariant = ThemeVariant.Dark;
         base.OnFrameworkInitializationCompleted();
     }
 
