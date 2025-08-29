@@ -10,10 +10,23 @@
         <local:ViewLocator/>
     </Application.DataTemplates>
     <Application.Styles>
-        <FluentTheme/>
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <!-- Palette for Dark theme variant -->
+                <ColorPaletteResources x:Key="Dark" 
+                                    RegionColor="#0d0f18ff" 
+                                    ErrorText="Yellow" />
+                <ColorPaletteResources x:Key="Light"  
+                                    RegionColor="#f6f6f6ff" 
+                                    ErrorText="Yellow" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+        <StyleInclude Source="avares://IconPacks.Avalonia/Icons.axaml" />
     </Application.Styles>
     <Application.Resources>
         <conv:FpiEnabledConverter x:Key="FpiEnabledConverter"/>
     </Application.Resources>
+
+    
 </Application>

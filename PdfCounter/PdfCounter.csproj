@@ -23,9 +23,9 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(RuntimeIdentifier)'=='win-x64' or '$(RuntimeIdentifier)'=='win-arm64'">
-    <PublishSingleFile>false</PublishSingleFile>
+    <PublishSingleFile>true</PublishSingleFile>
     <PublishReadyToRun>false</PublishReadyToRun>
-    <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
+    <!-- <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract> -->
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,9 +35,7 @@
 
     <ItemGroup Condition="Exists('runtimes')">
     <!-- Copy the entire runtimes tree (if present) to build and publish outputs -->
-    <None Include="runtimes/**"
-          CopyToOutputDirectory="PreserveNewest"
-          CopyToPublishDirectory="Always" />
+    <None Include="runtimes/**" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always" />
   </ItemGroup>
 
   <!-- For macOS app bundles, also embed inside .app -->
@@ -58,6 +56,7 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+    <PackageReference Include="IconPacks.Avalonia" Version="1.2.0" />
     <PackageReference Include="itext7" Version="9.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
     <PackageReference Include="PDFiumCore" Version="134.0.6982" />

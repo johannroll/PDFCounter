@@ -12,9 +12,11 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using PdfCounter.Models;
@@ -141,7 +143,6 @@ public partial class MainWindow : Window
                 var textBlock = new TextBlock
                 {
                     Text = msg,
-                    Foreground = Brushes.WhiteSmoke, // change text color
                     TextWrapping = TextWrapping.Wrap,
                     Margin = new Thickness(0, 0, 0, 12),
                     HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
@@ -231,7 +232,6 @@ public partial class MainWindow : Window
                         Text = jobName,
                         VerticalAlignment = VerticalAlignment.Center,
                         TextWrapping = TextWrapping.NoWrap,
-                        Foreground = Brushes.White
                     };
 
                     var scroller = new ScrollViewer
@@ -462,15 +462,33 @@ public partial class MainWindow : Window
     {
         ViewModel.CurrentTab = 0;
     }
+
+    private void OnSwitchThemeClicked(object sender, RoutedEventArgs e)
+    {
+        if (Application.Current is null)
+        {
+            return;
+        }
+
+        var currentTheme = Application.Current.RequestedThemeVariant;
+        if (currentTheme != null && currentTheme.Equals(ThemeVariant.Dark))
+        {
+            Application.Current.RequestedThemeVariant = ThemeVariant.Light;
+        }
+        else
+        {
+            Application.Current.RequestedThemeVariant = ThemeVariant.Dark;
+        }
+    }
     
     // overload that takes the owner window
     private async Task<bool> ConfirmAsync(string message, Window owner)
     {
-        var msg = new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0,0,0,12)  };
+        var msg = new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 12) };
         var ok = new Button { Content = "Yes", IsDefault = true, MinWidth = 80 };
-        var cancel = new Button { Content = "No", IsCancel = true, MinWidth = 80, Margin = new Thickness(8,0,0,0) };
+        var cancel = new Button { Content = "No", IsCancel = true, MinWidth = 80, Margin = new Thickness(8, 0, 0, 0) };
 
-        var buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0,12,0,0) };
+        var buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 12, 0, 0) };
         buttons.Children.Add(ok);
         buttons.Children.Add(cancel);
 

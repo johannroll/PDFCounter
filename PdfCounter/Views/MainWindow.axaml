@@ -3,9 +3,10 @@
         xmlns:vm="using:PdfCounter.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
         xmlns:views="using:PdfCounter.Views"
         mc:Ignorable="d"
-        d:DesignWidth="500"
+        d:DesignWidth="600"
         d:DesignHeight="800"
         x:Class="PdfCounter.Views.MainWindow"
         xmlns:m="using:PdfCounter.Models"
@@ -43,6 +44,23 @@
       </StackPanel>
     </DataTemplate>
   </Window.DataTemplates>
+
+    <SplitView IsPaneOpen="True"
+            DisplayMode="Inline"
+            OpenPaneLength="50">
+      <SplitView.Pane>
+        <Button
+          Click="OnSwitchThemeClicked" 
+          HorizontalContentAlignment="Center" 
+          VerticalContentAlignment="Center" 
+          HorizontalAlignment="Center"
+          Background="Transparent"
+          VerticalAlignment="Top" Margin="0 6 0 6">
+          <iconPacks:PackIconMaterial Kind="ThemeLightDark" Width="20" Height="20" />
+        </Button>
+       
+       
+      </SplitView.Pane>
   
     <Grid Margin="0">
       <Grid.RowDefinitions>
@@ -113,7 +131,7 @@
             />
         </StackPanel>
         
-        <TextBlock Foreground="#e5e2e2ff" HorizontalAlignment="Center"  FontSize="26" Margin="20 60 0 10" Grid.Row="1" IsVisible="{Binding ContentDisabled}" Text="Load Job or PDF to start" />
+        <TextBlock HorizontalAlignment="Center"  FontSize="26" Margin="20 60 0 10" Grid.Row="1" IsVisible="{Binding ContentDisabled}" Text="Load Job or PDF to start" />
 
         <TabControl
           Grid.Row="1" 
@@ -370,4 +388,5 @@
         </TabControl>
       </Grid>
     </Grid>
+    </SplitView>
 </Window>
