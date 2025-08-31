@@ -261,7 +261,7 @@ public sealed class PdfExtractorService : IPdfExtractorService
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         var label = strategy.Chunks.FirstOrDefault(c =>
-            matchingValuesHashSet.Contains(c.Text.Trim()));
+            matchingValuesHashSet.Contains(Normalize(c.Text)));
 
         if (label is null) return string.Empty;
 
