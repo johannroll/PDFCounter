@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -162,8 +161,18 @@ public class MainWindowViewModel : ReactiveObject
     string _chunkFilter = "";
     public string ChunkFilter { get => _chunkFilter; set { this.RaiseAndSetIfChanged(ref _chunkFilter, value); RebuildChunkList(); } }
 
-    int _samplePageIndex = 0; // user-selected page to list chunks for
     bool _loadingPage;
+    public int SamplePageNumber
+{
+    get => SamplePageIndex + 1;
+    set
+    {
+        var newIndex = Math.Max(0, value - 1); // clamp so index never goes negative
+        if (newIndex != SamplePageIndex)
+            SamplePageIndex = newIndex; // this raises both property changes
+    }
+}
+    int _samplePageIndex = 0; // user-selected page to list chunks for
     public int SamplePageIndex
     {
         get => _samplePageIndex;
@@ -172,6 +181,7 @@ public class MainWindowViewModel : ReactiveObject
             if (_samplePageIndex != value)
             {
                 this.RaiseAndSetIfChanged(ref _samplePageIndex, value);
+                this.RaisePropertyChanged(nameof(SamplePageNumber));
                 _ = LoadPageAsyncSafe();
             }
         }
@@ -202,7 +212,7 @@ public class MainWindowViewModel : ReactiveObject
     }
      public int ImagePixelWidth => PageBitmap?.PixelSize.Width ?? 0;
     public int ImagePixelHeight => PageBitmap?.PixelSize.Height ?? 0;
-    public string NewFieldName { get; set; } = "TestBox";
+    public string NewFieldName { get; set; } = "";
     public string NewMatchValues { get; set; } = "";
     public bool NewFieldIsFirst { get; set; }
     private bool _newFieldIsInline;
@@ -295,6 +305,7 @@ public class MainWindowViewModel : ReactiveObject
             {
                 Name = "",
                 IsFirstPageIdentifier = false,
+                IsInlineValue = false,
                 MatchValues = "",
                 X = 0,
                 Y = 0,
@@ -617,19 +628,29 @@ public class MainWindowViewModel : ReactiveObject
         CurrentTab = 0;
         LoadedJobName = "";
         SamplePageIndex = 0;
-        NewFieldIsFirst = false;
-        NewFieldIsInline = false;
-        NewMatchValues = "";
-        NewH = 0;
-        NewW = 0;
-        NewX = 0;
-        NewY = 0;
     }
 
     private void ClearTestBoxesOverlays()
     {
         OverlayBoxes.Clear();
         UserFields.Clear();
+        NewFieldIsFirst = false;
+        NewFieldIsInline = false;
+        NewMatchValues = "";
+        NewFieldName = "";
+        NewH = 0;
+        NewW = 0;
+        NewX = 0;
+        NewY = 0;
+
+        this.RaisePropertyChanged(nameof(NewFieldName));
+        this.RaisePropertyChanged(nameof(NewX));
+        this.RaisePropertyChanged(nameof(NewW));
+        this.RaisePropertyChanged(nameof(NewH));
+        this.RaisePropertyChanged(nameof(NewY));
+        this.RaisePropertyChanged(nameof(NewFieldIsFirst));
+        this.RaisePropertyChanged(nameof(NewFieldIsInline));
+        this.RaisePropertyChanged(nameof(NewMatchValues));
     }
 
     private async System.Threading.Tasks.Task LoadPageAsync()
@@ -662,7 +683,7 @@ public class MainWindowViewModel : ReactiveObject
         // Extract chunks with iText7
         _chunks = ExtractChunksWithIText(PdfPath, SamplePageIndex); // your method
 
-        // Populate your grid rows
+        // Populate grid rows
         ResultRows.Clear();
         foreach (var r in ExtractChunksWithIText(PdfPath, SamplePageIndex))
             ResultRows.Add(r);
@@ -751,12 +772,33 @@ public class MainWindowViewModel : ReactiveObject
     private async Task AddTestBox()
     {
         // basic guard
-        if (string.IsNullOrWhiteSpace(NewMatchValues) && (NewW <= 0 || NewH <= 0) && !NewFieldIsInline) return;
+        if (string.IsNullOrWhiteSpace(NewFieldName))
+        {
+            await ShowError.Handle($"Field name is required.");
+            return;
+        }
+
+        var hasBlankCoordinate =
+            NewX <= 0 ||
+            NewY <= 0 ||
+            NewH <= 0 ||
+            NewW <= 0;
+
+        if (hasBlankCoordinate)
+        {
+            await ShowError.Handle($"Values required for all X, Y, Width and Height.");
+            return;
+        }
+        
+        if (string.IsNullOrWhiteSpace(NewMatchValues) && (NewW <= 0 || NewH <= 0) && !NewFieldIsInline)
+        {
+            return;
+        }
 
         if (NewFieldIsFirst && UserFields.Any(f => f.IsFirstPageIdentifier))
         {
             await ShowError.Handle($"First page identifier box already added.");
-            return;        
+            return;
         }
 
         if (UserFields.Any(f => f.Name.Equals(NewFieldName)))
@@ -767,7 +809,7 @@ public class MainWindowViewModel : ReactiveObject
 
         var f = new ExtractField
         {
-            Name = string.IsNullOrWhiteSpace(NewFieldName) ? "TestBox" : NewFieldName.Trim(),
+            Name = string.IsNullOrWhiteSpace(NewFieldName) ? "" : NewFieldName.Trim(),
             IsFirstPageIdentifier = NewFieldIsFirst,
             IsInlineValue = NewFieldIsInline,
             MatchValues = NewMatchValues,
@@ -806,6 +848,9 @@ public class MainWindowViewModel : ReactiveObject
         NewX = SelectedChunk.X;
         NewW = SelectedChunk.Width;
         NewH = SelectedChunk.Height;
+        NewFieldIsFirst = false;
+        NewFieldIsInline = false;
+        NewMatchValues = "";
 
         // Y in ChunkRow is MIDLINE; overlay expects BOTTOM:
         // Prefer Bottom if you added it from ExtractionStrategy,
@@ -819,6 +864,9 @@ public class MainWindowViewModel : ReactiveObject
         this.RaisePropertyChanged(nameof(NewW));
         this.RaisePropertyChanged(nameof(NewH));
         this.RaisePropertyChanged(nameof(NewY));
+        this.RaisePropertyChanged(nameof(NewFieldIsFirst));
+        this.RaisePropertyChanged(nameof(NewFieldIsInline));
+        this.RaisePropertyChanged(nameof(NewMatchValues));
 
         CurrentTab = 1;
     }

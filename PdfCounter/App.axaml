@@ -14,18 +14,26 @@
             <FluentTheme.Palettes>
                 <!-- Palette for Dark theme variant -->
                 <ColorPaletteResources x:Key="Dark" 
-                                    RegionColor="#0d0f18ff" 
+                                    RegionColor="#0d0f18ff"
                                     ErrorText="Yellow" />
                 <ColorPaletteResources x:Key="Light"  
-                                    RegionColor="#f6f6f6ff" 
+                                    RegionColor="#f7f7f7ff"
                                     ErrorText="Yellow" />
             </FluentTheme.Palettes>
         </FluentTheme>
+        <Style Selector="Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource FluentPalette.Palette.CustomColor1}" />
+        </Style>
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
         <StyleInclude Source="avares://IconPacks.Avalonia/Icons.axaml" />
     </Application.Styles>
     <Application.Resources>
-        <conv:FpiEnabledConverter x:Key="FpiEnabledConverter"/>
+        <ResourceDictionary>
+            <conv:FpiEnabledConverter x:Key="FpiEnabledConverter"/>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://PdfCounter/Assets/Themes/CustomBrushes.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 
     
