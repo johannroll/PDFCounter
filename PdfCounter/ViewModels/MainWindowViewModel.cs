@@ -908,13 +908,13 @@ public class MainWindowViewModel : ReactiveObject
         try
         {
             // 1) Open the PDF
-                await OpenPdfFromPathAsync(job.PdfPath);
+            await OpenPdfFromPathAsync(job.PdfPath);
             PdfFileName = job.PdfFileName;
             var pageCount = _pdfDocument?.GetNumberOfPages() ?? 0;
             var idx = Math.Clamp(job.SamplePageIndex, 0, Math.Max(pageCount - 1, 0));
 
             // Set WITHOUT auto-loading, then load once explicitly
-            _samplePageIndex = idx;                   
+            _samplePageIndex = idx;
             this.RaisePropertyChanged(nameof(SamplePageIndex));
             ContentEnabled = true;
 
@@ -939,6 +939,10 @@ public class MainWindowViewModel : ReactiveObject
 
             // Button visibility toggle
             RowsNotZero = Rows.Count > 1 && CurrentTab == 2;
+        }
+        catch (Exception ex)
+        {
+            await ShowError.Handle($"Error applying job: {ex.Message}");
         }
         finally
         {

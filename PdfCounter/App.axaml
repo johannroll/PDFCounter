@@ -3,7 +3,7 @@
              x:Class="PdfCounter.App"
              xmlns:local="using:PdfCounter"
              xmlns:conv="using:PdfCounter.Converters"
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Light">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
