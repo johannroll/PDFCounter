@@ -782,7 +782,7 @@ public class MainWindowViewModel : ReactiveObject
             NewH <= 0 ||
             NewW <= 0;
 
-        if (hasBlankCoordinate)
+        if (hasBlankCoordinate && !NewFieldIsInline)
         {
             await ShowError.Handle($"Values required for all X, Y, Width and Height.");
             return;
