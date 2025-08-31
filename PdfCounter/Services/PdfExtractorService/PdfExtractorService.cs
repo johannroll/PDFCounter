@@ -252,7 +252,12 @@ public sealed class PdfExtractorService : IPdfExtractorService
     {
         if (string.IsNullOrWhiteSpace(matchingValues)) return string.Empty;
 
-        var matchingValuesHashSet = matchingValues.Split(",").Select(c => c.Trim())
+        static string Normalize(string? s) =>
+            Regex.Replace(s ?? "", @"\s+", " ").Trim();
+
+        var matchingValuesHashSet = matchingValues.Split(",")
+            .Select(Normalize)
+            // .Select(c => c.Trim())
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         var label = strategy.Chunks.FirstOrDefault(c =>

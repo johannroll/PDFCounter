@@ -290,19 +290,19 @@
                                           Margin="0 0 8 0"
                                           VerticalAlignment="Center"/>
                                 <TextBlock 
-                                          Text=" 🏷️"
+                                          Text="🏷️"
                                           FontSize="12"
                                           Margin="3 0 0 0"
                                           VerticalAlignment="Center"
                                           IsVisible="{Binding IsFirstPageIdentifier}"/>
                                 <TextBlock 
-                                          Text=" (Inline)"
+                                          Text="(Inline)"
                                           FontSize="12"
                                           Margin="3 0 0 0"
                                           VerticalAlignment="Center"
                                           IsVisible="{Binding IsInlineValue}"/>
                                 <TextBlock 
-                                          Text=" (Match values)"
+                                          Text="(Match values)"
                                           FontSize="12"
                                           Margin="3 0 0 0"
                                           VerticalAlignment="Center"
