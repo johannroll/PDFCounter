@@ -34,7 +34,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="m:ExtractField">
-      <StackPanel Orientation="Horizontal" Spacing="6">
+      <StackPanel Orientation="Horizontal" Spacing="4">
         <TextBlock  Margin="0 6 0 0" Text="🏷"
                     IsVisible="{Binding IsFirstPageIdentifier}" />
         <TextBlock VerticalAlignment="Center" Text="{Binding Name}" />

@@ -30,7 +30,7 @@ namespace PdfCounter.Models
             get => _matchValues;
             set => this.RaiseAndSetIfChanged(ref _matchValues, value);
         }
-        bool IsMatchValuesTag => _matchValues.Length > 0;
+        bool IsMatchValuesTag => _matchValues.Length > 0 && !_isInlineValue;
         int _pageIndex;
         public int PageIndex
         {
