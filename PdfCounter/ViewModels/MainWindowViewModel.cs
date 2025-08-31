@@ -28,8 +28,8 @@ public class MainWindowViewModel : ReactiveObject
         get => _loadedJobName;
         set => this.RaiseAndSetIfChanged(ref _loadedJobName, value);
     }
-    private string? _pdfFileName;
-    public string? PdfFileName
+    private string _pdfFileName = string.Empty;
+    public string PdfFileName
     {
         get => _pdfFileName;
         set => this.RaiseAndSetIfChanged(ref _pdfFileName, value);
@@ -56,8 +56,8 @@ public class MainWindowViewModel : ReactiveObject
     private PdfReader? _pdfReader;
     private Stream? _pdfStream;
     private readonly IPdfExtractorService _pdfExtractor;
-    private string? _pdfPath; // local file path for rasterizer
-    public string? PdfPath
+    private string _pdfPath = string.Empty;
+    public string PdfPath
     {
         get => _pdfPath;
         set => this.RaiseAndSetIfChanged(ref _pdfPath, value);
@@ -79,7 +79,7 @@ public class MainWindowViewModel : ReactiveObject
         }
     }
     private bool ContentDisabled => !ContentEnabled;
-    private ObservableAsPropertyHelper<bool> _isLoading;
+    private ObservableAsPropertyHelper<bool> _isLoading = default!;
     public bool IsLoading => _isLoading.Value;
     private ChunkRow? _selectedChunk;
     public ChunkRow? SelectedChunk
@@ -136,12 +136,12 @@ public class MainWindowViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> ProcessPdfFilesCommand { get; private set; } = null!;
     public ReactiveCommand<Unit, Unit> ProcessCoreCommand { get; private set; } = null!;
     public ReactiveCommand<Unit, Unit> ClearJobCommand { get; private set; } = null!;
-    public ReactiveCommand<Unit, Unit> AddTestBoxCommand { get; private set; } = null;
-    public ReactiveCommand<Unit, Unit> LoadPageCommand { get; private set; } = null;
-    public ReactiveCommand<Unit, Unit> RefreshCommand { get; private set; } = null;
-    public ReactiveCommand<Unit, Unit> SeedFromChunkCommand { get; private set; } = null;
-    public ReactiveCommand<Unit, Unit> ClearTestBoxesOverlaysCommand { get; private set; } = null;
-    public ReactiveCommand<Unit, Unit> ExportResultsToCsvCommand { get; private set; } = null;
+    public ReactiveCommand<Unit, Unit> AddTestBoxCommand { get; private set; } = null!;
+    public ReactiveCommand<Unit, Unit> LoadPageCommand { get; private set; } = null!;
+    public ReactiveCommand<Unit, Unit> RefreshCommand { get; private set; } = null!;
+    public ReactiveCommand<Unit, Unit> SeedFromChunkCommand { get; private set; } = null!;
+    public ReactiveCommand<Unit, Unit> ClearTestBoxesOverlaysCommand { get; private set; } = null!;
+    public ReactiveCommand<Unit, Unit> ExportResultsToCsvCommand { get; private set; } = null!;
     public ObservableCollection<ExtractField> Fields { get; } = new();
     private ObservableCollection<PdfProperty> _pdfDoc = new();
 
@@ -248,8 +248,6 @@ public class MainWindowViewModel : ReactiveObject
     private double _pageWidthPts, _pageHeightPts;
     private List<PositionedText> _chunks = new();
     private int _comboSelectedIndex = -1;
-    private string filePath;
-
     public int ComboSelectedIndex
     {
         get => _comboSelectedIndex;
@@ -262,7 +260,7 @@ public class MainWindowViewModel : ReactiveObject
     public bool CanSetFirstPageIdentifier(ExtractField field) =>
         !Fields.Any(f => f != field && f.IsFirstPageIdentifier);
 
-    private ObservableAsPropertyHelper<bool> _isBusy;
+    private ObservableAsPropertyHelper<bool> _isBusy = default!;
 
     private int _busyCount;
     private void BeginBusy()
@@ -278,14 +276,14 @@ public class MainWindowViewModel : ReactiveObject
     // Make IsBusy include this counter:
     public bool IsBusy => (_isBusy?.Value ?? false) || _busyCount > 0;
 
-    public MainWindowViewModel()
+    public MainWindowViewModel() : this(new PdfExtractorService())
     {
         Init();
     }
 
     public MainWindowViewModel(IPdfExtractorService pdfExtractor)
     {
-        _pdfExtractor = pdfExtractor;
+        _pdfExtractor = pdfExtractor ?? throw new ArgumentNullException(nameof(pdfExtractor));
         Init();
     }
 
@@ -910,7 +908,7 @@ public class MainWindowViewModel : ReactiveObject
         try
         {
             // 1) Open the PDF
-            await OpenPdfFromPathAsync(job.PdfPath);
+                await OpenPdfFromPathAsync(job.PdfPath);
             PdfFileName = job.PdfFileName;
             var pageCount = _pdfDocument?.GetNumberOfPages() ?? 0;
             var idx = Math.Clamp(job.SamplePageIndex, 0, Math.Max(pageCount - 1, 0));
@@ -922,7 +920,7 @@ public class MainWindowViewModel : ReactiveObject
 
             // 3) Restore fields (these drive extraction & overlays)
             UserFields.Clear();
-            foreach (var f in job.Fields)
+            foreach (var f in job.Fields ?? new List<ExtractField>())
                 UserFields.Add(f);
 
             // 4a) Make sure the page image + chunks are loaded

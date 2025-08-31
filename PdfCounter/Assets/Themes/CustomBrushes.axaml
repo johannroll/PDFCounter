@@ -3,9 +3,11 @@
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light">
             <SolidColorBrush x:Key="CustomBorderBrush" Color="LightGray" />
+            <SolidColorBrush x:Key="CustomPaneBrush" Color="#FFFFFFFF" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="Dark">
             <SolidColorBrush x:Key="CustomBorderBrush" Color="#2A2A2A" />
+            <SolidColorBrush x:Key="CustomPaneBrush" Color="#FF0A0C14" />
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>

@@ -24,7 +24,7 @@ namespace PdfCounter.Models
             get => _isInlineValue;
             set => this.RaiseAndSetIfChanged(ref _isInlineValue, value);
         } 
-        string _matchValues;
+        string _matchValues = string.Empty;
         public string MatchValues
         {
             get => _matchValues;

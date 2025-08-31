@@ -119,7 +119,8 @@ public partial class MainWindow : Window
                     Width = 360,
                     Height = 105,
                     Title = "Validation Error",
-                    Content = stack
+                    Content = stack,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
                 };
 
                 dismissButton.Click += (_, __) => dlg.Close();
@@ -160,7 +161,8 @@ public partial class MainWindow : Window
                     Width = 360,
                     Height = 145,
                     Title = "Info",
-                    Content = stack
+                    Content = stack,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
                 };
 
                 dismissButton.Click += (_, __) => dlg.Close();
@@ -317,7 +319,7 @@ public partial class MainWindow : Window
                 };
 
                 await dlg.ShowDialog(this);
-                ctx.SetOutput(selected);
+                ctx.SetOutput(selected ?? "");
             });
 
             vm.SaveJob.RegisterHandler(async ctx =>
@@ -332,6 +334,7 @@ public partial class MainWindow : Window
                 var dlg = new SaveJobWindow
                 {
                     DataContext = input,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
                 };
 
                 // Show dialog; user may cancel => result can be null

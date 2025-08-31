@@ -44,6 +44,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Assets\AirdocsIcon.ico" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <ApplicationIcon>Assets\AirdocsIcon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <MacOSBundleResource Include="Assets/AirdocsIcon.icns" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.3" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.3" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.3" />

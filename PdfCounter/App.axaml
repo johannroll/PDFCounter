@@ -14,15 +14,21 @@
             <FluentTheme.Palettes>
                 <!-- Palette for Dark theme variant -->
                 <ColorPaletteResources x:Key="Dark" 
-                                    RegionColor="#0d0f18ff"
+                                    RegionColor="#FF0d0f18"
                                     ErrorText="Yellow" />
                 <ColorPaletteResources x:Key="Light"  
-                                    RegionColor="#f7f7f7ff"
+                                    RegionColor="#FFF7f7f7"
                                     ErrorText="Yellow" />
             </FluentTheme.Palettes>
         </FluentTheme>
         <Style Selector="Border">
             <Setter Property="BorderBrush" Value="{DynamicResource FluentPalette.Palette.CustomColor1}" />
+        </Style>
+         <Style Selector="Window:dark">
+            <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}"/>
+        </Style>
+        <Style Selector="Window:light">
+            <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}"/>
         </Style>
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
         <StyleInclude Source="avares://IconPacks.Avalonia/Icons.axaml" />

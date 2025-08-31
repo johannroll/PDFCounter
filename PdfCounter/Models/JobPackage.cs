@@ -5,9 +5,9 @@ using DynamicData.Binding;
 namespace PdfCounter.Models;
 public class JobPackage
 {
-    public string Name { get; set; } = "";
-    public string? PdfFileName { get; set; }          
-    public string? PdfPath { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string PdfFileName { get; set; } = string.Empty;
+    public string PdfPath { get; set; } = string.Empty;
     public int SamplePageIndex { get; set; } = 0;
     // public ObservableCollection<OverlayBox>? OverlayBoxes { get; set;}
     // public ObservableCollection<ChunkRow>? ChunkRows { get; set; }        

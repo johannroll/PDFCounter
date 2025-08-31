@@ -11,7 +11,7 @@
         x:Class="PdfCounter.Views.MainWindow"
         xmlns:m="using:PdfCounter.Models"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/AirdocsLogoHTL.ico"
+        Icon="/Assets/AirdocsIcon.ico"
         x:CompileBindings="False"
         xmlns:conv="using:PdfCounter.Helpers"
         xmlns:converters="using:PdfCounter.Converters"
@@ -43,7 +43,8 @@
   </Window.DataTemplates>
 
     <SplitView IsPaneOpen="True"
-            DisplayMode="Inline"         
+            DisplayMode="Inline"
+            PaneBackground="{DynamicResource CustomPaneBrush}"         
             OpenPaneLength="50">
       <SplitView.Pane>
         <Button
@@ -52,7 +53,7 @@
           VerticalContentAlignment="Center" 
           HorizontalAlignment="Center"
           Background="Transparent"
-          VerticalAlignment="Top" Margin="0 6 0 6">
+          VerticalAlignment="Top" Margin="0 12 0 6">
           <iconPacks:PackIconMaterial Kind="ThemeLightDark" Width="20" Height="20" />
         </Button>    
       </SplitView.Pane>

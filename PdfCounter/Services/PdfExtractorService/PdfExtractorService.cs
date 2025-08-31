@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Numerics;
 using System.Text.RegularExpressions;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
@@ -299,14 +300,14 @@ public sealed class PdfExtractorService : IPdfExtractorService
         var asc  = info.GetAscentLine();
         var desc = info.GetDescentLine();
 
-        bool ascOk  = asc  != null && !float.IsNaN(asc.GetStartPoint().Get(0))  && !float.IsNaN(asc.GetStartPoint().Get(1))
+        bool ascOk  = asc != null && !float.IsNaN(asc.GetStartPoint().Get(0))  && !float.IsNaN(asc.GetStartPoint().Get(1))
                             && !float.IsNaN(asc.GetEndPoint().Get(0))       && !float.IsNaN(asc.GetEndPoint().Get(1));
         bool descOk = desc != null && !float.IsNaN(desc.GetStartPoint().Get(0)) && !float.IsNaN(desc.GetStartPoint().Get(1))
                             && !float.IsNaN(desc.GetEndPoint().Get(0))      && !float.IsNaN(desc.GetEndPoint().Get(1));
 
         float height, topY, bottomY, yMid;
 
-        if (ascOk && descOk)
+        if (ascOk && descOk && asc is not null && desc is not null)
         {
             // Distance between lines along the normal (use both endpoints & take the larger for safety)
             var a1 = asc.GetStartPoint();  var a2 = asc.GetEndPoint();

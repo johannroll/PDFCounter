@@ -15,7 +15,7 @@ namespace PdfCounter.Views;
   
 public partial class SaveJobWindow : Window
 {
-    private readonly MainWindowViewModel _mainVm;
+    private readonly MainWindowViewModel? _mainVm;
     public SaveJobWindow()
     {
         InitializeComponent();
