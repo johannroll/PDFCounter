@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -776,32 +777,27 @@ public class MainWindowViewModel : ReactiveObject
             return;
         }
 
+        if (UserFields.Any(f => f.Name.Equals(NewFieldName)))
+        {
+            await ShowError.Handle($"Overlay box {NewFieldName} has already been added.");
+            return;
+        }
+
         var hasBlankCoordinate =
             NewX <= 0 ||
             NewY <= 0 ||
             NewH <= 0 ||
             NewW <= 0;
 
-        if (hasBlankCoordinate && !NewFieldIsInline)
+        if (hasBlankCoordinate && !NewFieldIsInline && string.IsNullOrWhiteSpace(NewMatchValues))
         {
-            await ShowError.Handle($"Values required for all X, Y, Width and Height.");
-            return;
-        }
-        
-        if (string.IsNullOrWhiteSpace(NewMatchValues) && (NewW <= 0 || NewH <= 0) && !NewFieldIsInline)
-        {
+            await ShowError.Handle($"Values required for X, Y, Width and Height.");
             return;
         }
 
         if (NewFieldIsFirst && UserFields.Any(f => f.IsFirstPageIdentifier))
         {
             await ShowError.Handle($"First page identifier box already added.");
-            return;
-        }
-
-        if (UserFields.Any(f => f.Name.Equals(NewFieldName)))
-        {
-            await ShowError.Handle($"Overlay box {NewFieldName} has already been added.");
             return;
         }
 
