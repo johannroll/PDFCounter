@@ -4,10 +4,14 @@
         <ResourceDictionary x:Key="Light">
             <SolidColorBrush x:Key="CustomBorderBrush" Color="LightGray" />
             <SolidColorBrush x:Key="CustomPaneBrush" Color="#FFFFFFFF" />
+            <SolidColorBrush x:Key="MyCustomButtonText" Color="Green" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="Dark">
             <SolidColorBrush x:Key="CustomBorderBrush" Color="#2A2A2A" />
             <SolidColorBrush x:Key="CustomPaneBrush" Color="#FF0A0C14" />
+            <SolidColorBrush x:Key="MyCustomButtonText" Color="Green" />
         </ResourceDictionary>
+       
+        
     </ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>

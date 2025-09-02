@@ -117,7 +117,7 @@ public partial class MainWindow : Window
                 var dlg = new Window
                 {
                     Width = 360,
-                    Height = 105,
+                    Height = 130,
                     Title = "Validation Error",
                     Content = stack,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner

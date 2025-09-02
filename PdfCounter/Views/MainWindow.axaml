@@ -71,8 +71,8 @@
             IsVisible="{Binding IsBusy}"/>
         <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
           <StackPanel Margin="32 20 10 20" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left">
-            <Button Classes="" Grid.Row="0" Content="Load Job" Command="{Binding LoadJobCommand}" Margin="0,0,0,0"/>
-            <Button Classes="" Grid.Row="0" Content="Save Job" Command="{Binding SaveJobCommand}" Margin="8,0,0,0"/>
+            <Button Classes="accent" Grid.Row="0" Content="Load Job" Command="{Binding LoadJobCommand}" Margin="0,0,0,0"/>
+            <Button Classes="accent" Grid.Row="0" Content="Save Job" Command="{Binding SaveJobCommand}" Margin="8,0,0,0"/>
             <TextBlock Grid.Row="0" Margin="20,0,5,0" Text="Job:" VerticalAlignment="Center"/>
             <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Hidden" Width="195">
               <TextBlock Text="{Binding LoadedJobName}" VerticalAlignment="Center" TextWrapping="NoWrap" />
@@ -87,15 +87,15 @@
             <TextBlock Text="PDF:" VerticalAlignment="Center"/>
             <TextBox Focusable="False" IsReadOnly="True" Width="300" Text="{Binding PdfFileName, Mode=TwoWay}"/>
             <TextBlock Text="Page:" VerticalAlignment="Center" Margin="8,0,0,0"/>
-            <NumericUpDown Classes="" IsEnabled="{Binding ContentEnabled}"  HorizontalContentAlignment="Center" Width="103" Value="{Binding SamplePageNumber, Mode=TwoWay}" Minimum="1" Increment="1"/>
-            <Button Classes="" Content="Load PDF" Command="{Binding SelectFileCommand}" Margin="8,0,0,0"/>
-            <Button Classes="" IsVisible="False" Content="Refresh" Command="{Binding RefreshCommand}" Margin="8,0,0,0"/>
-            <Button Classes="" Content="Clear Job" Command="{Binding ClearJobCommand}" Margin="8,0,0,0"/>
+            <NumericUpDown Classes="accent" IsEnabled="{Binding ContentEnabled}"  HorizontalContentAlignment="Center" Width="130" Value="{Binding SamplePageNumber, Mode=TwoWay}" Minimum="1" Increment="1"/>
+            <Button Classes="accent" Content="Load PDF" Command="{Binding SelectFileCommand}" Margin="8,0,0,0"/>
+            <Button Classes="accent" IsVisible="False" Content="Refresh" Command="{Binding RefreshCommand}" Margin="8,0,0,0"/>
+            <Button Classes="accent" Content="Clear Job" Command="{Binding ClearJobCommand}" Margin="8,0,0,0"/>
             <Button 
               Content="Export CSV" 
               Margin="8,0,0,0"
               Foreground="#FFFFFF"
-              Background="DodgerBlue"
+              Background="Green"
               IsVisible="{Binding RowsNotZero}"
               Command="{Binding ExportResultsToCsvCommand}"
             />
@@ -265,11 +265,11 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal">
-                      <Button Classes="" Content="Add Box" Command="{Binding AddTestBoxCommand}" Margin="0,8,0,0"/>
-                      <Button Classes="" Content="Clear All" Command="{Binding ClearTestBoxesOverlaysCommand}" Margin="8,8,0,0"/>
+                      <Button Classes="info" Content="Add Box" Command="{Binding AddTestBoxCommand}" Margin="0,8,0,0"/>
+                      <Button Classes="danger"  Content="Clear All" Command="{Binding ClearTestBoxesOverlaysCommand}" Margin="8,8,0,0"/>
                     </StackPanel>
                     <Button
-                      Classes=""
+                      Classes="success"
                       Height="40"
                       HorizontalContentAlignment="Center"
                       VerticalContentAlignment="Center"
@@ -321,7 +321,7 @@
                             <Button Grid.Column="1"
                                     Content="Remove"
                                     Command="{Binding $parent[Window].DataContext.RemoveUserFieldCommand}"
-                                    Classes=""
+                                    Classes="danger"
                                     CommandParameter="{Binding .}"/>
                           </Grid>
                         </DataTemplate> 

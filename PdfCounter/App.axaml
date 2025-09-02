@@ -14,10 +14,12 @@
             <FluentTheme.Palettes>
                 <!-- Palette for Dark theme variant -->
                 <ColorPaletteResources x:Key="Dark" 
-                                    RegionColor="#FF0d0f18"   
+                                    RegionColor="#FF0d0f18"
+                                    Accent="#FFCC8844"
                                     ErrorText="Yellow" />
                 <ColorPaletteResources x:Key="Light"  
                                     RegionColor="#FFF7f7f7"
+                                    Accent="#FFCC8844"
                                     ErrorText="Yellow" />
             </FluentTheme.Palettes>
         </FluentTheme>
@@ -30,10 +32,22 @@
         <Style Selector="Window:light">
             <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}"/>
         </Style>
-        <!-- <Style Selector="Button">
+        <Style Selector="Button.accent">
             <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
-            <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}"/>
-        </Style> -->
+            <!-- <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}"/> -->
+        </Style>
+        <Style Selector="Button.success:pointerover /template/ ContentPresenter">
+            <Setter Property="BorderBrush" Value="Green" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
+            <Setter Property="BorderBrush" Value="Red" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Button.info:pointerover /template/ ContentPresenter">
+            <Setter Property="BorderBrush" Value="Orange" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
         <StyleInclude Source="avares://IconPacks.Avalonia/Icons.axaml" />
     </Application.Styles>
@@ -45,6 +59,4 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
-
-    
 </Application>
