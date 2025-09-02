@@ -16,11 +16,11 @@
                 <ColorPaletteResources x:Key="Dark" 
                                     RegionColor="#FF0d0f18"
                                     Accent="#FFCC8844"
-                                    ErrorText="Yellow" />
+                                    />
                 <ColorPaletteResources x:Key="Light"  
                                     RegionColor="#FFF7f7f7"
                                     Accent="#FFCC8844"
-                                    ErrorText="Yellow" />
+                                    />
             </FluentTheme.Palettes>
         </FluentTheme>
         <Style Selector="Border">

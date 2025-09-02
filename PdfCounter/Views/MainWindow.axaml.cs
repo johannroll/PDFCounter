@@ -226,6 +226,8 @@ public partial class MainWindow : Window
                         HorizontalAlignment = HorizontalAlignment.Right,
                     };
 
+                    deleteBtn.Classes.Add("danger");
+
                     // Dock the button to the right
                     DockPanel.SetDock(deleteBtn, Dock.Right);
 
