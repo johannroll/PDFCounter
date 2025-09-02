@@ -777,7 +777,7 @@ public class MainWindowViewModel : ReactiveObject
             return;
         }
 
-        if (UserFields.Any(f => f.Name.Equals(NewFieldName)))
+        if (UserFields.Any(f => f.Name.Trim().Equals(NewFieldName.Trim())))
         {
             await ShowError.Handle($"Overlay box {NewFieldName} has already been added.");
             return;

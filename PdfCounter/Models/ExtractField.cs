@@ -3,7 +3,6 @@ using System.Reactive.Linq;
 using ReactiveUI;
 namespace PdfCounter.Models
 {
-
     public class ExtractField : ReactiveObject
     {
         string _name = "";

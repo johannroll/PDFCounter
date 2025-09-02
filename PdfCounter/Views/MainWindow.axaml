@@ -70,11 +70,9 @@
             Margin="0"   
             IsVisible="{Binding IsBusy}"/>
         <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
-          <!-- <TextBlock Grid.Row="0" Margin="20" FontSize="24" FontWeight="800" 
-                  HorizontalAlignment="Center" Text="PDF Counter"/> -->
           <StackPanel Margin="32 20 10 20" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left">
-            <Button Grid.Row="0" Content="Load Job" Command="{Binding LoadJobCommand}" Margin="0,0,0,0"/>
-            <Button Grid.Row="0" Content="Save Job" Command="{Binding SaveJobCommand}" Margin="8,0,0,0"/>
+            <Button Classes="" Grid.Row="0" Content="Load Job" Command="{Binding LoadJobCommand}" Margin="0,0,0,0"/>
+            <Button Classes="" Grid.Row="0" Content="Save Job" Command="{Binding SaveJobCommand}" Margin="8,0,0,0"/>
             <TextBlock Grid.Row="0" Margin="20,0,5,0" Text="Job:" VerticalAlignment="Center"/>
             <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Hidden" Width="195">
               <TextBlock Text="{Binding LoadedJobName}" VerticalAlignment="Center" TextWrapping="NoWrap" />
@@ -89,10 +87,10 @@
             <TextBlock Text="PDF:" VerticalAlignment="Center"/>
             <TextBox Focusable="False" IsReadOnly="True" Width="300" Text="{Binding PdfFileName, Mode=TwoWay}"/>
             <TextBlock Text="Page:" VerticalAlignment="Center" Margin="8,0,0,0"/>
-            <NumericUpDown IsEnabled="{Binding ContentEnabled}"  HorizontalContentAlignment="Center" Width="103" Value="{Binding SamplePageNumber, Mode=TwoWay}" Minimum="1" Increment="1"/>
-            <Button Content="Load PDF" Command="{Binding SelectFileCommand}" Margin="8,0,0,0"/>
-            <Button IsVisible="False" Content="Refresh" Command="{Binding RefreshCommand}" Margin="8,0,0,0"/>
-            <Button Content="Clear Job" Command="{Binding ClearJobCommand}" Margin="8,0,0,0"/>
+            <NumericUpDown Classes="" IsEnabled="{Binding ContentEnabled}"  HorizontalContentAlignment="Center" Width="103" Value="{Binding SamplePageNumber, Mode=TwoWay}" Minimum="1" Increment="1"/>
+            <Button Classes="" Content="Load PDF" Command="{Binding SelectFileCommand}" Margin="8,0,0,0"/>
+            <Button Classes="" IsVisible="False" Content="Refresh" Command="{Binding RefreshCommand}" Margin="8,0,0,0"/>
+            <Button Classes="" Content="Clear Job" Command="{Binding ClearJobCommand}" Margin="8,0,0,0"/>
             <Button 
               Content="Export CSV" 
               Margin="8,0,0,0"
@@ -103,13 +101,17 @@
             />
           </StackPanel>
           
-          <!-- <TextBlock HorizontalAlignment="Center"  FontSize="26" Margin="20 60 0 10" Grid.Row="1" IsVisible="{Binding ContentDisabled}" Text="Load Job or PDF to start" /> -->
           <TabControl
             Grid.Row="1" 
             IsVisible="{Binding ContentEnabled}"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             SelectedIndex="{Binding CurrentTab}">
+            <TabControl.Styles>
+              <Style Selector="TabItem">
+                <Setter Property="FontWeight" Value="Bold"/>
+              </Style>
+            </TabControl.Styles>
             <TabItem 
             Header="Chunks (points)"
             Tapped="OnTabHeaderClicked"
@@ -118,7 +120,7 @@
                 <StackPanel Margin="12 10 0 10" Orientation="Horizontal" Spacing="8">
                   <TextBlock Text="Filter:" VerticalAlignment="Center"/>
                   <TextBox Width="220" Text="{Binding ChunkFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                  <TextBlock Text="(Shows Text)" VerticalAlignment="Center" Opacity="0.7" Margin="8,0,0,0"/>
+                  <TextBlock Text="(Shows Chunk Text)" VerticalAlignment="Center" Opacity="0.7" Margin="8,0,0,0"/>
                 </StackPanel>
                 <DataGrid Grid.Row="1"
                           ItemsSource="{Binding ChunkRows}" 
@@ -130,6 +132,11 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           >
+                   <DataGrid.Styles>
+                    <Style Selector="DataGridColumnHeader">
+                      <Setter Property="FontWeight" Value="Bold"/>
+                    </Style>
+                  </DataGrid.Styles>
                   <DataGrid.Columns>
                     <DataGridTextColumn Header="Text"  
                         Binding="{Binding Text}" 
@@ -258,10 +265,11 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal">
-                      <Button Content="Add Box" Command="{Binding AddTestBoxCommand}" Margin="0,8,0,0"/>
-                      <Button Content="Clear All" Command="{Binding ClearTestBoxesOverlaysCommand}" Margin="8,8,0,0"/>
+                      <Button Classes="" Content="Add Box" Command="{Binding AddTestBoxCommand}" Margin="0,8,0,0"/>
+                      <Button Classes="" Content="Clear All" Command="{Binding ClearTestBoxesOverlaysCommand}" Margin="8,8,0,0"/>
                     </StackPanel>
                     <Button
+                      Classes=""
                       Height="40"
                       HorizontalContentAlignment="Center"
                       VerticalContentAlignment="Center"
@@ -313,6 +321,7 @@
                             <Button Grid.Column="1"
                                     Content="Remove"
                                     Command="{Binding $parent[Window].DataContext.RemoveUserFieldCommand}"
+                                    Classes=""
                                     CommandParameter="{Binding .}"/>
                           </Grid>
                         </DataTemplate> 
@@ -354,7 +363,10 @@
                     <Setter Property="Margin" Value="0"/>
                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
                     <Setter Property="VerticalAlignment"   Value="Stretch"/>
-                  </Style>
+                  </Style>         
+                  <Style Selector="DataGridColumnHeader">
+                    <Setter Property="FontWeight" Value="Bold"/>
+                  </Style>      
                 </DataGrid.Styles>
               </DataGrid>
             </TabItem>

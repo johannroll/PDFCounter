@@ -34,7 +34,6 @@ public partial class App : Application
             DisableAvaloniaDataAnnotationValidation();
         }
 
-        RequestedThemeVariant = ThemeVariant.Dark;
         base.OnFrameworkInitializationCompleted();
     }
 
