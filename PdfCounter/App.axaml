@@ -23,6 +23,9 @@
                                     />
             </FluentTheme.Palettes>
         </FluentTheme>
+        <Style Selector="DataValidationErrors">
+            <Setter Property="Theme" Value="{StaticResource TooltipDataValidationErrors}" />
+        </Style>
         <Style Selector="Border">
             <Setter Property="BorderBrush" Value="{DynamicResource FluentPalette.Palette.CustomColor1}" />
         </Style>
@@ -35,6 +38,10 @@
         <Style Selector="Button.accent">
             <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
             <!-- <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}"/> -->
+        </Style>
+        <Style Selector="Button.accent-border:pointerover /template/ ContentPresenter">
+            <Setter Property="BorderBrush" Value="#FFCC8844" />
+            <Setter Property="BorderThickness" Value="1" />
         </Style>
         <Style Selector="Button.success:pointerover /template/ ContentPresenter">
             <Setter Property="BorderBrush" Value="Green" />

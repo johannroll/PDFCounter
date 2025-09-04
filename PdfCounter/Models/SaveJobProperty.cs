@@ -1,4 +1,3 @@
-using System.Reactive.Linq;
 using ReactiveUI;
 namespace PdfCounter.Models
 {

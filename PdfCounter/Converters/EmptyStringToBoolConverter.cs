@@ -8,8 +8,6 @@ namespace PdfCounter.Converters;
     {
         public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
         {
-            // values[0] = TextBlock.Text
-            // values[1] = DataGridRow.Index
             var text = values.Count > 0 ? values[0] as string : null;
 
             int rowIndex = -1;
@@ -19,7 +17,6 @@ namespace PdfCounter.Converters;
                 else if (values[1] is IConvertible c) rowIndex = c.ToInt32(CultureInfo.InvariantCulture);
             }
 
-            // highlight only if NOT first row and text is null/whitespace
             return rowIndex > 0 && string.IsNullOrWhiteSpace(text);
         }
 

@@ -9,8 +9,6 @@ public class JobPackage
     public string PdfFileName { get; set; } = string.Empty;
     public string PdfPath { get; set; } = string.Empty;
     public int SamplePageIndex { get; set; } = 0;
-    // public ObservableCollection<OverlayBox>? OverlayBoxes { get; set;}
-    // public ObservableCollection<ChunkRow>? ChunkRows { get; set; }        
     public List<ExtractField>? Fields { get; set; } = new();  
     public DateTime CreatedUtc { get; set; }
     public DateTime UpdatedUtc { get; set; }

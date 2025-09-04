@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Numerics;
 using System.Text.RegularExpressions;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
@@ -20,7 +19,6 @@ public sealed class PdfExtractorService : IPdfExtractorService
         public HashSet<string> Fonts = new(StringComparer.OrdinalIgnoreCase);
     }
 
-    // ===== Units: ALL ExtractField coordinates are in PDF points (1/72") with BOTTOM-LEFT origin =====
     public (ObservableCollection<PdfProperty> results,
             int totalPages,
             int totalBlankPages,
@@ -45,13 +43,11 @@ public sealed class PdfExtractorService : IPdfExtractorService
         {
             var page = pdfDocument.GetPage(pageNum);
             var pageSize = page.GetPageSize();
-            double pageHeightPts = pageSize.GetHeight(); // points, bottom-left origin
-
+            double pageHeightPts = pageSize.GetHeight(); 
             var strategy = new ExtractionStrategy();
             var processor = new PdfCanvasProcessor(strategy);
             processor.ProcessPageContent(page);
 
-            // Blank-page check via full text
             var raw  = PdfTextExtractor.GetTextFromPage(page) ?? string.Empty;
             var text = Regex.Replace(raw.Replace("\u00A0", " "), @"\s+", " ").Trim();
 
@@ -62,7 +58,6 @@ public sealed class PdfExtractorService : IPdfExtractorService
                 if (docNo > 0) current.BlankPages++;
             }
 
-            // Font collection
             foreach (var f in strategy.Fonts)
             {
                 var clean = f.Replace(",", "");
@@ -70,7 +65,6 @@ public sealed class PdfExtractorService : IPdfExtractorService
                 if (docNo > 0) current.Fonts.Add(clean);
             }
 
-            // Detect document boundary using any IsFirstPageIdentifier field that yields a value
             bool startsNewDoc = false;
             foreach (var idField in fields.Where(f => f.IsFirstPageIdentifier))
             {
@@ -101,9 +95,11 @@ public sealed class PdfExtractorService : IPdfExtractorService
                 };
             }
 
-            if (docNo == 0) continue;
+            if (docNo == 0)
+            {
+                continue;
+            }
 
-            // Capture all fields
             foreach (var field in fields)
             {
                 var value = ExtractValue(strategy, field, pageHeightPts);
@@ -135,7 +131,6 @@ public sealed class PdfExtractorService : IPdfExtractorService
             }
         }
 
-        // Apply summaries to each row
         foreach (var r in results)
         {
             if (summaries.TryGetValue(r.DocNo, out var s))
@@ -149,11 +144,8 @@ public sealed class PdfExtractorService : IPdfExtractorService
         return (results, totalPages, totalBlankPages, docNo, allDocFonts);
     }
 
-    // --- helpers ---
-
     private static string ExtractValue(ExtractionStrategy strategy, ExtractField field, double pageHeightPts)
     {
-        // If Width/Height > 0 we treat X/Y/Width/Height as PDF points (bottom-left origin) and extract within the rectangle
         if (!field.IsInlineValue && string.IsNullOrWhiteSpace(field.MatchValues) && field.Width > 0 && field.Height > 0)
         {
             return ExtractFromRect(strategy, field);
@@ -173,23 +165,19 @@ public sealed class PdfExtractorService : IPdfExtractorService
         return string.Empty;
     }
 
-    /// Rect-based extraction where ExtractField coordinates/dimensions are in **PDF points**, bottom-left origin.
     private static string ExtractFromRect(ExtractionStrategy strategy, ExtractField f)
     {
-        // User rectangle in **points**, bottom-left origin
         double left   = f.X;
         double right  = f.X + f.Width;
         double bottom = f.Y;
         double top    = f.Y + f.Height;
 
-        // Small forgiveness to account for float noise (points)
         const double tolX = 0.50;
         const double tolY = 0.50;
         left   -= tolX; right  += tolX;
         bottom -= tolY; top    += tolY;
 
-        // Thresholds: how much of the chunk must be covered by the user rect?
-        const double minChunkOverlap = 0.60;   // 60% of the CHUNK's area must be inside user rect
+        const double minChunkOverlap = 0.70;   // 60% of the CHUNK's area must be inside user rect
         const double maxHeightDeltaPts   = 1.5; // absolute height slack in points
         const double maxHeightDeltaRatio = 0.25; // or 25% relative slack
 
@@ -198,13 +186,11 @@ public sealed class PdfExtractorService : IPdfExtractorService
         var hits = strategy.Chunks
             .Where(c =>
             {
-                // Chunk rectangle
                 double cl = c.X;
                 double cr = c.X + c.Width;
                 double cb = c.Bottom;
                 double ct = c.Top;
 
-                // Intersections
                 double iw = Math.Max(0, Math.Min(right, cr) - Math.Max(left, cl));
                 double ih = Math.Max(0, Math.Min(top,   ct) - Math.Max(bottom, cb));
                 if (iw <= 0 || ih <= 0) return false;
@@ -212,11 +198,8 @@ public sealed class PdfExtractorService : IPdfExtractorService
                 double inter = iw * ih;
                 double carea = Math.Max(0.0001, (cr - cl) * (ct - cb));
 
-                // 1) Enough of the CHUNK is covered by the user rect?
                 bool overlapOk = (inter / carea) >= minChunkOverlap;
 
-                // 2) Height roughly consistent with the strip?
-                //    (prevents very short runs that barely intersect)
                 double hDelta = Math.Abs(c.Height - rectH);
                 bool heightOk = hDelta <= Math.Max(maxHeightDeltaPts, maxHeightDeltaRatio * c.Height);
 
@@ -269,7 +252,6 @@ public sealed class PdfExtractorService : IPdfExtractorService
     }
 }
 
-// unchanged except we also expose Top/Bottom/Height already
     public class ExtractionStrategy : IEventListener
     {
         public HashSet<string> Fonts { get; } = new();
@@ -281,7 +263,6 @@ public sealed class PdfExtractorService : IPdfExtractorService
 
         var info = (TextRenderInfo)data;
 
-        // Baseline & direction
         var blStart = info.GetBaseline().GetStartPoint();
         var blEnd   = info.GetBaseline().GetEndPoint();
 
@@ -292,16 +273,12 @@ public sealed class PdfExtractorService : IPdfExtractorService
         float dirLen = (float)Math.Sqrt(dirX * dirX + dirY * dirY);
         if (dirLen <= 0f) dirLen = 1f; // guard
 
-        // Unit normal to baseline (perpendicular)
         float nX = -dirY / dirLen;
         float nY =  dirX / dirLen;
 
-        // Width along baseline (may be 0 for single-glyph chunks)
         float width = dirX; // horizontal-ish PDFs
-        // For robustness, compute scalar projection of (blEnd-blStart) on baseline:
         width = (dirX * (dirX / dirLen)) + (dirY * (dirY / dirLen)); // == dirLen
 
-        // Try ascent/desc lines
         var asc  = info.GetAscentLine();
         var desc = info.GetDescentLine();
 
@@ -314,7 +291,6 @@ public sealed class PdfExtractorService : IPdfExtractorService
 
         if (ascOk && descOk && asc is not null && desc is not null)
         {
-            // Distance between lines along the normal (use both endpoints & take the larger for safety)
             var a1 = asc.GetStartPoint();  var a2 = asc.GetEndPoint();
             var d1 = desc.GetStartPoint(); var d2 = desc.GetEndPoint();
 
@@ -325,7 +301,6 @@ public sealed class PdfExtractorService : IPdfExtractorService
             float h2 = Dist(a2.Get(0), a2.Get(1), d2.Get(0), d2.Get(1));
             height = Math.Max(h1, h2);
 
-            // Top/Bottom Y (for your non-rotated overlay usage, keep using Y-extrema)
             float ascYmax = Math.Max(a1.Get(1), a2.Get(1));
             float descYmin = Math.Min(d1.Get(1), d2.Get(1));
             topY = Math.Max(ascYmax, descYmin + height);   // defensive
@@ -334,7 +309,6 @@ public sealed class PdfExtractorService : IPdfExtractorService
         }
         else
         {
-            // === Metrics fallback (noisy PDFs / Type3 fonts, etc.) ===
             float fs = info.GetFontSize();
             float emFactor = 0.75f; // last-resort
 
@@ -359,7 +333,6 @@ public sealed class PdfExtractorService : IPdfExtractorService
             height = fs * emFactor;
             if (!(height > 0f)) height = 8f; // absolute last fallback
 
-            // Place top/bottom along the baseline normal (works even if rotated)
             float topX = baseX + nX * (height * 0.6f);
             float topYp= baseY + nY * (height * 0.6f);
             float botX = topX - nX * height;
@@ -370,7 +343,6 @@ public sealed class PdfExtractorService : IPdfExtractorService
             yMid    = (topY + bottomY) / 2f;
         }
 
-        // Font name (unchanged)
         var fontProgram = info.GetFont().GetFontProgram();
         var rawName  = fontProgram.GetFontNames().GetFontName();
         var fontName = rawName.Contains('+') ? rawName.Split('+')[1] : rawName;

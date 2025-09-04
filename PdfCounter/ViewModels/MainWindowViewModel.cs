@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -158,21 +157,21 @@ public class MainWindowViewModel : ReactiveObject
     public ObservableCollection<OverlayBox> OverlayBoxes { get; private set; } = new();
     public ObservableCollection<ChunkRow> ChunkRows { get; private set; } = new();
     public ObservableCollection<ExtractField> UserFields { get; } = new();
-    // ===== Tab 2: Chunks list (points) =====
+
     string _chunkFilter = "";
     public string ChunkFilter { get => _chunkFilter; set { this.RaiseAndSetIfChanged(ref _chunkFilter, value); RebuildChunkList(); } }
 
     bool _loadingPage;
     public int SamplePageNumber
-{
-    get => SamplePageIndex + 1;
-    set
     {
-        var newIndex = Math.Max(0, value - 1); // clamp so index never goes negative
-        if (newIndex != SamplePageIndex)
-            SamplePageIndex = newIndex; // this raises both property changes
+        get => SamplePageIndex + 1;
+        set
+        {
+            var newIndex = Math.Max(0, value - 1); // clamp so index never goes negative
+            if (newIndex != SamplePageIndex)
+                SamplePageIndex = newIndex; // this raises both property changes
+        }
     }
-}
     int _samplePageIndex = 0; // user-selected page to list chunks for
     public int SamplePageIndex
     {
@@ -195,7 +194,6 @@ public class MainWindowViewModel : ReactiveObject
         finally { _loadingPage = false; }
     }
 
-    // ===== Tab 3: Rendered bitmap + overlays =====
     Bitmap? _pageBitmap;
     public Bitmap? PageBitmap
     {
@@ -231,11 +229,10 @@ public class MainWindowViewModel : ReactiveObject
         get => !_newFieldIsInline;
         set
         {
-            // setting NotInline flips Inline; avoids recursion because setter above handles raises
             var desiredInline = !value;
             if (desiredInline != _newFieldIsInline)
             {
-                NewFieldIsInline = desiredInline; // triggers both notifications
+                NewFieldIsInline = desiredInline; 
             }
         }
     }
@@ -245,7 +242,6 @@ public class MainWindowViewModel : ReactiveObject
     public double NewW { get; set; }
     public double NewH { get; set; }
 
-    // Backing store from loader
     private double _pageWidthPts, _pageHeightPts;
     private List<PositionedText> _chunks = new();
     private int _comboSelectedIndex = -1;
@@ -354,13 +350,7 @@ public class MainWindowViewModel : ReactiveObject
             ClearJob();
 
             ContentEnabled = true;
-
             PdfFileName = file.Name;
-
-            // _pdfDocument?.Close();
-            // _pdfReader?.Close();
-            // _pdfStream?.Dispose();
-
             _pdfStream = await file.OpenReadAsync();
             _pdfReader = new PdfReader(_pdfStream);
             _pdfDocument = new PdfDocument(_pdfReader);
@@ -463,6 +453,7 @@ public class MainWindowViewModel : ReactiveObject
        {
             ProcessCoreCommand.IsExecuting,
             SelectFileCommand.IsExecuting,
+            ProcessPdfFilesCommand.IsExecuting,
             LoadPageCommand.IsExecuting,
             // LoadJobCommand.IsExecuting,
             // SaveJobCommand.IsExecuting,
@@ -478,7 +469,10 @@ public class MainWindowViewModel : ReactiveObject
 
     private async Task ProcessPdfFilesAsync()
     {
-        if (_pdfDocument is null) return;
+        if (_pdfDocument is null)
+        {
+            return;
+        }
 
         var results = await Task.Run(() =>
             _pdfExtractor.ProcessPdf(_pdfDocument!, UserFields)
@@ -562,7 +556,6 @@ public class MainWindowViewModel : ReactiveObject
             return needsQuotes ? $"\"{t}\"" : t;
         }
 
-        // Header
         sb.AppendLine(string.Join(",", cols.Select(Esc)));
 
         var dataRows = Rows.AsEnumerable();
@@ -607,7 +600,7 @@ public class MainWindowViewModel : ReactiveObject
 
     private void ClearJob()
     {
-        if (_pdfDocument is null)
+        if (_pdfDocument is null && UserFields is null)
         {
             return;
         }
@@ -680,7 +673,7 @@ public class MainWindowViewModel : ReactiveObject
         _pageHeightPts = raster.PageHeightPts;
 
         // Extract chunks with iText7
-        _chunks = ExtractChunksWithIText(PdfPath, SamplePageIndex); // your method
+        _chunks = ExtractChunksWithIText(PdfPath, SamplePageIndex); 
 
         // Populate grid rows
         ResultRows.Clear();
@@ -688,12 +681,11 @@ public class MainWindowViewModel : ReactiveObject
             ResultRows.Add(r);
 
         RebuildChunkList();
-        RebuildOverlays(); // overlays use UserFields (points) + bitmap size
+        RebuildOverlays(); 
     }
 
     private void RebuildAll()
     {
-        // When user adjusts anything, re-project overlays and/or chunks
         RebuildChunkList();
         RebuildOverlays();
     }
@@ -713,10 +705,10 @@ public class MainWindowViewModel : ReactiveObject
                 {
                     Text = c.Text ?? "",
                     X = c.X,
-                    Y = c.Y,                // midline
+                    Y = c.Y,                
                     Width = c.Width,
                     Height = c.Height,
-                    Bottom = c.Bottom       // from ExtractionStrategy
+                    Bottom = c.Bottom       
                 });
             }
     }
@@ -752,7 +744,7 @@ public class MainWindowViewModel : ReactiveObject
                     HeightPx = heightPx,
                 });
             }
-            // && f.PageIndex == SamplePageIndex
+    
             if (!f.IsFirstPageIdentifier)
                 {
                     OverlayBoxes.Add(new OverlayBox
@@ -770,7 +762,6 @@ public class MainWindowViewModel : ReactiveObject
 
     private async Task AddTestBox()
     {
-        // basic guard
         if (string.IsNullOrWhiteSpace(NewFieldName))
         {
             await ShowError.Handle($"Field name is required.");
@@ -846,9 +837,6 @@ public class MainWindowViewModel : ReactiveObject
         NewFieldIsInline = false;
         NewMatchValues = "";
 
-        // Y in ChunkRow is MIDLINE; overlay expects BOTTOM:
-        // Prefer Bottom if you added it from ExtractionStrategy,
-        // otherwise compute: midline - height/2
         NewY = SelectedChunk.Bottom != 0 ? SelectedChunk.Bottom
                                         : SelectedChunk.Y - (SelectedChunk.Height / 2.0);
 
@@ -867,7 +855,6 @@ public class MainWindowViewModel : ReactiveObject
 
     private void RecomputeFirstIdStats()
     {
-        // Which column is the First Page Identifier?
         FirstIdFieldName = Fields.FirstOrDefault(f => f.IsFirstPageIdentifier)?.Name;
 
         FirstIdCounts.Clear();
@@ -903,52 +890,48 @@ public class MainWindowViewModel : ReactiveObject
         BeginBusy();
         try
         {
-            // 1) Open the PDF
-            await OpenPdfFromPathAsync(job.PdfPath);
+            OpenPdfFromPathAsync(job.PdfPath);
             PdfFileName = job.PdfFileName;
             var pageCount = _pdfDocument?.GetNumberOfPages() ?? 0;
             var idx = Math.Clamp(job.SamplePageIndex, 0, Math.Max(pageCount - 1, 0));
 
-            // Set WITHOUT auto-loading, then load once explicitly
             _samplePageIndex = idx;
             this.RaisePropertyChanged(nameof(SamplePageIndex));
             ContentEnabled = true;
 
-            // 3) Restore fields (these drive extraction & overlays)
             UserFields.Clear();
             foreach (var f in job.Fields ?? new List<ExtractField>())
                 UserFields.Add(f);
 
-            // 4a) Make sure the page image + chunks are loaded
-            // SamplePageIndex setter calls LoadPageAsync(), but to be explicit:
             await LoadPageAsync();
-
-            // 4b) Build overlays from UserFields (don’t load from JSON)
             RebuildOverlays();
-
-            // 5) Build the results table (Rows) from the PDF + fields
             await ProcessPdfFilesAsync();
 
-            // Optional: set the tab you want to land on
             CurrentTab = 2;
             SamplePageIndex = job.SamplePageIndex;
-
-            // Button visibility toggle
             RowsNotZero = Rows.Count > 1 && CurrentTab == 2;
+        }
+        catch (FileNotFoundException)
+        {
+            await ShowError.Handle($"PDF not found: {job.PdfPath}");
+        }
+        catch (IOException ex)
+        {
+            await ShowError.Handle($"Could not open PDF: {ex.Message}");
         }
         catch (Exception ex)
         {
-            await ShowError.Handle($"Error applying job: {ex.Message}");
+            await ShowError.Handle($"Error applying job: {ex.Message}");   
         }
         finally
         {
             EndBusy();
         }
     }
-
+    
     public async Task LoadJobByNameAsync(string jobName)
     {
-        
+
         var job = await LoadJobFromDiskAsync(jobName);
         if (job == null)
         {
@@ -964,7 +947,6 @@ public class MainWindowViewModel : ReactiveObject
         await ApplyJobAsync(job);
     }
 
-    // Load the JSON back
     private async Task<JobPackage?> LoadJobFromDiskAsync(string jobName)
     {
         var fullPath = Path.Combine(GetJobsFolder(), jobName + ".json");
@@ -983,8 +965,6 @@ public class MainWindowViewModel : ReactiveObject
             PdfPath = PdfPath,
             SamplePageIndex = SamplePageIndex,
             Fields = UserFields.ToList(),
-            // ChunkRows = ChunkRows,
-            // OverlayBoxes = OverlayBoxes,
             CreatedUtc = DateTime.UtcNow,
             UpdatedUtc = DateTime.UtcNow
         };
@@ -1000,7 +980,6 @@ public class MainWindowViewModel : ReactiveObject
         var json = JsonSerializer.Serialize(job, options);
         await File.WriteAllTextAsync(fullPath, json);
 
-        // Optional: notify/log
         await ShowInfo.Handle($"Saved job to: {fullPath}");
         LoadedJobName = jobName;
         Console.WriteLine($"Saved job to: {fullPath}");
@@ -1016,35 +995,25 @@ public class MainWindowViewModel : ReactiveObject
 
     private static string GetJobsFolder()
     {
-        // e.g. Windows: C:\Users\<you>\AppData\Roaming\PdfCounter\Jobs
-        //      macOS/Linux: ~/.config/PdfCounter/Jobs
         var root = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         var dir = Path.Combine(root, "PdfCounter", "Jobs");
         Directory.CreateDirectory(dir);
         return dir;
     }
 
-    private async Task OpenPdfFromPathAsync(string path)
+    private void OpenPdfFromPathAsync(string path)
     {
-        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
-        {
-            await ShowError.Handle($"PDF not found: {path}");
-            return;
-        }
-
         PdfFileName = Path.GetFileName(path);
 
         _pdfDocument?.Close();
         _pdfReader?.Close();
         _pdfStream?.Dispose();
 
-        // keep a live stream just like SelectFileCommand does
         _pdfStream = File.OpenRead(path);
         _pdfReader = new PdfReader(_pdfStream);
         _pdfDocument = new PdfDocument(_pdfReader);
         SetPdf(_pdfDocument);
 
-        // also set PdfPath for rasterizer/iText-by-path code
         PdfPath = path;
     }
 }

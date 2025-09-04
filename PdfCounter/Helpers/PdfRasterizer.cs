@@ -1,4 +1,3 @@
-// PdfRasterizer.cs
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -7,11 +6,9 @@ using Avalonia;
 using Avalonia.Media.Imaging;
 using PdfCounter.ViewModels;
 using PDFiumCore;
-using ReactiveUI; // NEW API: lowercase modules (fpdfview, etc.)
 
 public static class PdfRasterizer
 {
-    // Initialize PDFium once per process.
     static PdfRasterizer()
     {
         fpdfview.FPDF_InitLibrary();
@@ -92,8 +89,7 @@ public static class PdfRasterizer
 #else
                                 0x02 /*LCD_TEXT*/ | 0x01 /*ANNOT*/;
 #endif
-                            // Rotation parameter (last but one) = 0..3 (0°,90°,180°,270°).
-                            // PDFium respects page rotation metadata already, so 0 is typical.
+                
                             fpdfview.FPDF_RenderPageBitmap(
                                 bmp, page,
                                 0, 0, widthPx, heightPx,
@@ -109,7 +105,6 @@ public static class PdfRasterizer
                         handle.Free();
                     }
 
-                    // Avalonia WriteableBitmap from BGRA buffer
                     var wb = new WriteableBitmap(
                         new PixelSize(widthPx, heightPx),
                         new Vector(96, 96),

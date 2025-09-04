@@ -1,5 +1,4 @@
 
-using System.Reactive.Linq;
 using ReactiveUI;
 namespace PdfCounter.Models
 {
@@ -36,7 +35,7 @@ namespace PdfCounter.Models
             get => _pageIndex;
             set => this.RaiseAndSetIfChanged(ref _pageIndex, value);
         }
-        // Coordinates (edit as needed: ints/doubles)
+       
         double _x, _y, _width, _height;
         public double X { get => _x; set => this.RaiseAndSetIfChanged(ref _x, value); }
         public double Y { get => _y; set => this.RaiseAndSetIfChanged(ref _y, value); }

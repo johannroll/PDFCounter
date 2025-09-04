@@ -71,10 +71,10 @@
             IsVisible="{Binding IsBusy}"/>
         <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
           <StackPanel Margin="32 20 10 20" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left">
-            <Button Classes="accent" Grid.Row="0" Content="Load Job" Command="{Binding LoadJobCommand}" Margin="0,0,0,0"/>
-            <Button Classes="accent" Grid.Row="0" Content="Save Job" Command="{Binding SaveJobCommand}" Margin="8,0,0,0"/>
+            <Button Classes="accent-border" Grid.Row="0" Content="Load Job" Command="{Binding LoadJobCommand}" Margin="0,0,0,0"/>
+            <Button Classes="accent-border" Grid.Row="0" Content="Save Job" Command="{Binding SaveJobCommand}" Margin="8,0,0,0"/>
             <TextBlock Grid.Row="0" Margin="20,0,5,0" Text="Job:" VerticalAlignment="Center"/>
-            <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Hidden" Width="195">
+            <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Hidden" Width="400">
               <TextBlock Text="{Binding LoadedJobName}" VerticalAlignment="Center" TextWrapping="NoWrap" />
             </ScrollViewer>
           </StackPanel>
@@ -87,7 +87,7 @@
             <TextBlock Text="PDF:" VerticalAlignment="Center"/>
             <TextBox Focusable="False" IsReadOnly="True" Width="300" Text="{Binding PdfFileName, Mode=TwoWay}"/>
             <TextBlock Text="Page:" VerticalAlignment="Center" Margin="8,0,0,0"/>
-            <NumericUpDown Classes="accent" IsEnabled="{Binding ContentEnabled}"  HorizontalContentAlignment="Center" Width="130" Value="{Binding SamplePageNumber, Mode=TwoWay}" Minimum="1" Increment="1"/>
+            <NumericUpDown Classes="accent" IsEnabled="{Binding ContentEnabled}"  HorizontalContentAlignment="Center" Width="130" Value="{Binding SamplePageNumber, Mode=TwoWay}" Minimum="1" Increment="1" />
             <Button Classes="accent" Content="Load PDF" Command="{Binding SelectFileCommand}" Margin="8,0,0,0"/>
             <Button Classes="accent" IsVisible="False" Content="Refresh" Command="{Binding RefreshCommand}" Margin="8,0,0,0"/>
             <Button Classes="accent" Content="Clear Job" Command="{Binding ClearJobCommand}" Margin="8,0,0,0"/>
