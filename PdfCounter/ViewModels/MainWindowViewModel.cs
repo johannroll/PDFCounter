@@ -22,7 +22,7 @@ namespace PdfCounter.ViewModels;
 
 public class MainWindowViewModel : ReactiveObject
 {
-    private string _loadedJobName = "";
+    private string _loadedJobName = "none";
     public string LoadedJobName
     {
         get => _loadedJobName;
@@ -618,7 +618,7 @@ public class MainWindowViewModel : ReactiveObject
         PageBitmap = null;
         ContentEnabled = false;
         CurrentTab = 0;
-        LoadedJobName = "";
+        LoadedJobName = "none";
         SamplePageIndex = 0;
     }
 
