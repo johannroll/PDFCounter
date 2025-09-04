@@ -342,28 +342,45 @@ public class MainWindowViewModel : ReactiveObject
         SelectFileCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             var file = await PickPdf.Handle(Unit.Default);
-            if (file is null) 
+            if (file is null) return;
+
+            BeginBusy();
+            try
             {
-                return;
+                await Task.Yield();
+
+                ClearJob();
+                ContentEnabled = true;
+                PdfFileName = file.Name;
+
+                var tempPath = Path.Combine(Path.GetTempPath(), $"PdfCounter_{Guid.NewGuid():N}.pdf");
+                await using (var src = await file.OpenReadAsync())
+                await using (var dst = File.Create(tempPath))
+                await src.CopyToAsync(dst);
+                var doc = await Task.Run(() =>
+                {
+                    var reader = new PdfReader(tempPath);
+                    return new PdfDocument(reader);
+                });
+
+                _pdfDocument?.Close();
+                _pdfDocument = doc;
+                PdfPath = tempPath;
+
+                await LoadPageAsync();
             }
-
-            ClearJob();
-
-            ContentEnabled = true;
-            PdfFileName = file.Name;
-            _pdfStream = await file.OpenReadAsync();
-            _pdfReader = new PdfReader(_pdfStream);
-            _pdfDocument = new PdfDocument(_pdfReader);
-            SetPdf(_pdfDocument);
-
-            using var tmp = new MemoryStream();
-            _pdfStream.Position = 0;
-            await _pdfStream.CopyToAsync(tmp);
-            tmp.Position = 0;
-            var tempPath = Path.Combine(Path.GetTempPath(), $"PdfCounter_{Guid.NewGuid():N}.pdf");
-            await File.WriteAllBytesAsync(tempPath, tmp.ToArray());
-            PdfPath = tempPath;
-            await LoadPageAsync();
+            catch (Exception ex)
+            {
+                await ShowError.Handle($"Failed to load PDF: {ex.Message}");
+                _pdfDocument?.Close();
+                _pdfDocument = null;
+                PdfPath = string.Empty;
+                ContentEnabled = false;
+            }
+            finally
+            {
+                EndBusy();
+            }
         });
 
         SeedFromChunkCommand = ReactiveCommand.Create(SeedFromSelectedChunk);
@@ -890,7 +907,7 @@ public class MainWindowViewModel : ReactiveObject
         BeginBusy();
         try
         {
-            OpenPdfFromPathAsync(job.PdfPath);
+            await OpenPdfFromPathAsync(job.PdfPath);
             PdfFileName = job.PdfFileName;
             var pageCount = _pdfDocument?.GetNumberOfPages() ?? 0;
             var idx = Math.Clamp(job.SamplePageIndex, 0, Math.Max(pageCount - 1, 0));
@@ -1001,8 +1018,9 @@ public class MainWindowViewModel : ReactiveObject
         return dir;
     }
 
-    private void OpenPdfFromPathAsync(string path)
+    private async Task OpenPdfFromPathAsync(string path)
     {
+        await Task.Delay(1);
         PdfFileName = Path.GetFileName(path);
 
         _pdfDocument?.Close();

@@ -33,8 +33,7 @@
       <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
 
-    <ItemGroup Condition="Exists('runtimes')">
-    <!-- Copy the entire runtimes tree (if present) to build and publish outputs -->
+  <ItemGroup Condition="Exists('runtimes')">
     <None Include="runtimes/**" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Always" />
   </ItemGroup>
 
@@ -68,7 +67,7 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
-    <PackageReference Include="IconPacks.Avalonia" Version="1.2.0" />
+    <PackageReference Include="IconPacks.Avalonia.Material" Version="1.2.0" />
     <PackageReference Include="itext7" Version="9.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
     <PackageReference Include="PDFiumCore" Version="134.0.6982" />

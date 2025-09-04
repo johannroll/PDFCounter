@@ -56,7 +56,7 @@
             <Setter Property="BorderThickness" Value="1" />
         </Style>
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
-        <StyleInclude Source="avares://IconPacks.Avalonia/Icons.axaml" />
+        <StyleInclude Source="avares://IconPacks.Avalonia.Material/Material.axaml" />
     </Application.Styles>
     <Application.Resources>
         <ResourceDictionary>
